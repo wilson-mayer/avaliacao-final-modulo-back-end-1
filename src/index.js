@@ -1,4 +1,4 @@
-import express from "express";
+import express, { request, response } from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
 
@@ -19,3 +19,19 @@ app.get("/", (request, response) => {
 });
 
 //------------------------------------------------------
+
+app.post("/signup", (request, response) => {
+  const data = request.body;
+
+  admins.push({
+    id: nextId,
+    name: data.name,
+    email: data.email,
+    password: data.password,
+  });
+
+  nextId++;
+  response
+    .status(200)
+    .json({ success: true, message: "Usuário cadastrado com sucesso." });
+});
