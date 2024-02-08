@@ -14,26 +14,10 @@ app.listen(port, () => {
   console.log(`===>>>> Server start on PORT: ${port}`);
 });
 
-//------------------------------------------------------
+//---------------TESTAR SERVIDOR---------------------------------------
 
 app.get("/", (req, res) => {
   return res.status(200).json({ sucess: true, msg: "START EXPRESS API" });
-});
-
-//-------------CRIAR USUÁRIO-----------------------------------------
-
-app.post("/signup", (req, res) => {
-  const data = req.body;
-
-  admins.push({
-    id: nextId,
-    name: data.name,
-    email: data.email,
-    password: data.password,
-  });
-
-  nextId++;
-  res.status(200).json({ message: "Usuário cadastrado com sucesso." });
 });
 
 //---------------CRIAR USUÁRIO CRIPTOGRAFADO------------------------------------------
@@ -57,7 +41,7 @@ app.post("/signup/crypto", async (req, res) => {
     id: nextId,
     name: data.name,
     email: data.email,
-    password: data.password,
+    password: hashPassword,
   });
 
   nextId++;
@@ -71,6 +55,7 @@ app.get("/admins", (req, res) => {
   return res.status(200).json({
     message: "Lista de usuários retornada com sucesso.",
     data: admins.map((user) => ({
+      id: user.id,
       name: user.name,
       email: user.email,
       password: user.password,
