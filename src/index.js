@@ -6,6 +6,7 @@ const app = express();
 const port = 3333;
 const admins = [];
 let nextId = 1;
+const messages = [];
 
 app.use(express.json());
 app.use(cors());
@@ -88,4 +89,25 @@ app.post("/login", async (req, res) => {
     message: "Login realizado com sucesso!",
     email,
   });
+});
+
+//----------------------CRIAR RECADO------------------------------------------------------------
+
+app.post("/messages/:userEmail", (req, res) => {
+  const userEmail = req.params.userEmail;
+  const data = req.body;
+
+  messages.push({
+    idUser: userEmail,
+    titulo: data.titulo,
+    descricao: data.descricao,
+  });
+
+  res.status(200).json({ message: "Recado enviado com sucesso!" });
+});
+
+//-------------------------VER RECADOS-------------------------------------------------------------
+
+app.get("/messages", (req, res) => {
+  return res.status(200).json({ data: messages });
 });
