@@ -36,8 +36,6 @@ app.post("/signup/crypto", async (req, res) => {
   }
   const hashPassword = await bcrypt.hash(password, 10);
 
-  console.log(hashPassword);
-
   admins.push({
     id: nextId,
     name: data.name,
@@ -96,18 +94,78 @@ app.post("/login", async (req, res) => {
 app.post("/messages/:userEmail", (req, res) => {
   const userEmail = req.params.userEmail;
   const data = req.body;
+  const titulo = data.titulo;
+  const descricao = data.descricao;
+
+  //falta filtrar para apenas o mesmo usuário não conseguir repetir o recado
+
+  const messageAlreadyExist = messages.find(
+    (msg) => msg.descricao === descricao
+  );
+
+  if (messageAlreadyExist) {
+    return res.status(400).json({ message: "Recado já cadastrado." });
+  }
 
   messages.push({
+    id: nextId,
     idUser: userEmail,
     titulo: data.titulo,
     descricao: data.descricao,
   });
+  nextId++;
 
   res.status(200).json({ message: "Recado enviado com sucesso!" });
 });
 
-//-------------------------VER RECADOS-------------------------------------------------------------
+//-------------------------LER RECADOS-------------------------------------------------------------
 
 app.get("/messages", (req, res) => {
   return res.status(200).json({ data: messages });
+});
+
+//-------------------------ATUALIZAR RECADOS-------------------------------------------------------
+
+app.put("/messages/:messageId", (req, res) => {
+  const data = req.body;
+
+  const messageId = Number(req.params.messageId);
+  const titulo = data.titulo;
+  const descricao = data.descricao;
+
+  const messageIndex = messages.findIndex(
+    (message) => message.id === messageId
+  );
+
+  if (messageIndex !== -1) {
+    const message = messages[messageIndex];
+    message.titulo = titulo;
+    message.descricao = descricao;
+
+    res.status(200).json({ message: "Recado alterado com sucesso!" });
+  } else {
+    return res.status(404).json({ message: "Recado não encontrado" });
+  }
+});
+
+//-----------------------DELETAR RECADOS-----------------------------------------------------------
+
+app.delete("/messages/:messageId", (req, res) => {
+  const data = req.body;
+  const messageId = Number(req.params.messageId);
+
+  const messageIndex = messages.findIndex(
+    (message) => message.id === messageId
+  );
+
+  if (messageIndex !== -1) {
+    const message = messages[messageIndex];
+    const deletedMessage = messages.splice(messageIndex, 1);
+
+    res
+      .status(200)
+      .json({ message: "Recado deletado com sucesso!", deletedMessage });
+  } else {
+    return res.status(404).json({ message: "Recado não encontrado" });
+  }
 });
