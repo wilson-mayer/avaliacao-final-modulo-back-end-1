@@ -32,7 +32,7 @@ app.post("/signup/crypto", async (req, res) => {
   const emailAlreadyExist = admins.find((admin) => admin.email === email);
 
   if (emailAlreadyExist) {
-    return res.status(400).json({ message: "Email já cadastrado." });
+    return res.status(400).json({ message: "Usuário já cadastrado." });
   }
   const hashPassword = await bcrypt.hash(password, 10);
 
@@ -96,8 +96,6 @@ app.post("/messages/:userEmail", (req, res) => {
   const data = req.body;
   const titulo = data.titulo;
   const descricao = data.descricao;
-
-  //falta filtrar para apenas o mesmo usuário não conseguir repetir o recado
 
   const messageAlreadyExist = messages.find(
     (msg) => msg.descricao === descricao
