@@ -6,6 +6,7 @@ const app = express();
 const port = 3333;
 const admins = [];
 let nextId = 1;
+const messages = [];
 
 app.use(express.json());
 app.use(cors());
@@ -31,11 +32,9 @@ app.post("/signup/crypto", async (req, res) => {
   const emailAlreadyExist = admins.find((admin) => admin.email === email);
 
   if (emailAlreadyExist) {
-    return res.status(400).json({ message: "Email já cadastrado." });
+    return res.status(400).json({ message: "Usuário já cadastrado." });
   }
   const hashPassword = await bcrypt.hash(password, 10);
-
-  console.log(hashPassword);
 
   admins.push({
     id: nextId,
@@ -88,4 +87,83 @@ app.post("/login", async (req, res) => {
     message: "Login realizado com sucesso!",
     email,
   });
+});
+
+//----------------------CRIAR RECADO------------------------------------------------------------
+
+app.post("/messages/:userEmail", (req, res) => {
+  const userEmail = req.params.userEmail;
+  const data = req.body;
+  const titulo = data.titulo;
+  const descricao = data.descricao;
+
+  const messageAlreadyExist = messages.find(
+    (msg) => msg.descricao === descricao
+  );
+
+  if (messageAlreadyExist) {
+    return res.status(400).json({ message: "Recado já cadastrado." });
+  }
+
+  messages.push({
+    id: nextId,
+    usuario: userEmail,
+    titulo: data.titulo,
+    descricao: data.descricao,
+  });
+  nextId++;
+
+  res.status(200).json({ message: "Recado enviado com sucesso!" });
+});
+
+//-------------------------LER RECADOS-------------------------------------------------------------
+
+app.get("/messages", (req, res) => {
+  return res.status(200).json({ data: messages });
+});
+
+//-------------------------ATUALIZAR RECADOS-------------------------------------------------------
+
+app.put("/messages/:messageId", (req, res) => {
+  const data = req.body;
+
+  const messageId = Number(req.params.messageId);
+  const titulo = data.titulo;
+  const descricao = data.descricao;
+
+  const messageIndex = messages.findIndex(
+    (message) => message.id === messageId
+  );
+
+  if (messageIndex !== -1) {
+    const message = messages[messageIndex];
+    message.titulo = titulo;
+    message.descricao = descricao;
+
+    res.status(200).json({ message: "Recado alterado com sucesso!" });
+  } else {
+    return res.status(404).json({ message: "Recado não encontrado" });
+  }
+});
+
+//-----------------------DELETAR RECADOS-----------------------------------------------------------
+
+app.delete("/messages/:messageId", (req, res) => {
+  const data = req.body;
+  const messageId = Number(req.params.messageId);
+
+  const messageIndex = messages.findIndex(
+    (message) => message.id === messageId
+  );
+
+  if (messageIndex !== -1) {
+    const message = messages[messageIndex];
+    const deletedMessage = messages.splice(messageIndex, 1);
+
+    res
+      .status(200)
+      .json({ message: "Recado deletado com sucesso!", deletedMessage });
+  } else {
+    return res.status(404).json({ message: "Recado não encontrado" });
+  }
 });
