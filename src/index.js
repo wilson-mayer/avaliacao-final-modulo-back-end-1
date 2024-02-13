@@ -109,7 +109,7 @@ app.post("/messages/:userEmail", (req, res) => {
 
   messages.push({
     id: nextId,
-    idUser: userEmail,
+    usuario: userEmail,
     titulo: data.titulo,
     descricao: data.descricao,
   });
