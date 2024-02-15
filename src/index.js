@@ -1,6 +1,7 @@
 import express, { req, res } from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
+import validateUser from "./middlewares/validateUser";
 
 const app = express();
 const port = 3333;
@@ -23,7 +24,7 @@ app.get("/", (req, res) => {
 
 //---------------CRIAR USUÁRIO CRIPTOGRAFADO------------------------------------------
 
-app.post("/signup/crypto", async (req, res) => {
+app.post("/signup/crypto", validateUser, async (req, res) => {
   const data = req.body;
   const name = data.name;
   const email = data.email;
