@@ -1,7 +1,7 @@
 function validateUser(req, res, next) {
   const data = req.body;
 
-  if (data.email.length > 3 || data.email == undefined) {
+  if (data.email.length < 2 || data.email == undefined) {
     return res.status(400).json({ message: "O e-mail digitado é inválido" });
   }
 

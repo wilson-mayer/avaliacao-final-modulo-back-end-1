@@ -71,23 +71,18 @@ app.post("/login", async (req, res) => {
   const password = data.password;
 
   const user = admins.find((user) => user.email === email);
-  const hashPassword = await bcrypt.hash(password, 10);
-  const passwordMath = await bcrypt.compare(password, hashPassword);
 
-  if (!passwordMath) {
-    return res.status(400).json({
-      message: "Senha inválida!",
+  if (user) {
+    bcrypt.compare(password, user.password, (error, result) => {
+      if (result) {
+        res.status(200).json({ message: "Login realizado com sucesso!" });
+      } else {
+        res.status(400).json({ message: "Senha incorreta!" });
+      }
     });
+  } else {
+    res.status(404).json({ message: "Usuário não encontrado!" });
   }
-  if (!user) {
-    return res.status(400).json({
-      message: "Usuário não encontrado!",
-    });
-  }
-  res.status(200).json({
-    message: "Login realizado com sucesso!",
-    email,
-  });
 });
 
 //----------------------CRIAR RECADO------------------------------------------------------------
