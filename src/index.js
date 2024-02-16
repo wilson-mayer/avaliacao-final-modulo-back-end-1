@@ -93,9 +93,15 @@ app.post("/messages/:userEmail", (req, res) => {
   const titulo = data.titulo;
   const descricao = data.descricao;
 
+  const userLog = admins.find((user) => user.email !== userEmail);
+
   const messageAlreadyExist = messages.find(
     (msg) => msg.descricao === descricao
   );
+
+  if (userLog) {
+    return res.status(400).json({ message: "Usuário não logado!" });
+  }
 
   if (messageAlreadyExist) {
     return res.status(400).json({ message: "Recado já cadastrado." });
